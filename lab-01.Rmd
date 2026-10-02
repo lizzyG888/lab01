@@ -285,7 +285,19 @@ visitors_with_nations %>%
 
 ```{r Ex_n}
 # Write your code here
-
+	visitorsCost <- visitors %>%
+	  mutate(
+	    cost = case_when(
+	      cost == "Free" ~ "Free",
+	      cost == "Members" ~ "Members",
+	      TRUE ~ "Charged"
+	    )
+	  )
+visitorsCost %>% filter(region == "Scotland") %>%
+  summarise(
+    meancost = mean((n_2022-n_2021)/n_2021)
+  ) %>%
+  arrange(cost)
 
 
 ```
