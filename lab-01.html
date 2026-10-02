@@ -724,7 +724,27 @@ attractions that have free admission for all visitors?</em></p>
 to 2022. Of the tourist attractions in Scotland, sort into increasing
 numerical order the types of admission charges based on the mean
 percentage change in visitor numbers.</em></p>
-<pre class="r"><code># Write your code here</code></pre>
+<pre class="r"><code># Write your code here
+    visitorsCost &lt;- visitors %&gt;%
+      mutate(
+        admission = case_when(
+          admission == &quot;Free&quot; ~ &quot;Free&quot;,
+          admission == &quot;Members&quot; ~ &quot;Members&quot;,
+          TRUE ~ &quot;Charged&quot;
+        )
+      )
+visitorsCost %&gt;% filter(region == &quot;Scotland&quot;) %&gt;%
+  group_by(admission) %&gt;%
+  summarise(
+    meancost = mean((n_2022-n_2021)/n_2021, na.rm = TRUE)
+  ) %&gt;%
+  arrange(meancost)</code></pre>
+<pre><code>## # A tibble: 3 × 2
+##   admission meancost
+##   &lt;chr&gt;        &lt;dbl&gt;
+## 1 Charged     0.0465
+## 2 Members     1.38  
+## 3 Free        3.03</code></pre>
 </div>
 </div>
 
