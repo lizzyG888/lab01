@@ -481,15 +481,19 @@ visitors %&gt;% count(admission, setting)</code></pre>
 <div id="exercise-d." class="section level3">
 <h3>Exercise d.</h3>
 <p><em>Which attraction had exactly 565,772 visitors in 2022?</em></p>
-<pre class="r"><code>#visitors %&gt;% filter(___ == ____)</code></pre>
+<p><code>{r Ex_d}visitors %&gt;% filter(n_2022 == 565772)</code></p>
 </div>
 <div id="exercise-e." class="section level3">
 <h3>Exercise e.</h3>
 <p><em>How many attraction had more than 1 million visitors in
 2022?</em></p>
-<pre class="r"><code>#visitors %&gt;% 
-#  filter(____) %&gt;%
-#  count()</code></pre>
+<pre class="r"><code>visitors %&gt;% 
+  filter(n_2022 &gt; 1000000) %&gt;%
+  count()</code></pre>
+<pre><code>## # A tibble: 1 × 1
+##       n
+##   &lt;int&gt;
+## 1    22</code></pre>
 </div>
 </div>
 <div id="question-5" class="section level2">
@@ -514,20 +518,28 @@ visitors in 2022?</em></p>
 <h3>Exercise f.</h3>
 <p><em>How many attractions had between 50,000 and 100,000 visitors in
 2022?</em></p>
-<pre class="r"><code>#visitors %&gt;% 
-#  ____(
-#    ______,
-#    ______ ) %&gt;%
-#  count()</code></pre>
+<pre class="r"><code>visitors %&gt;% 
+  filter(
+    n_2022 &lt; 100000,
+    n_2022 &gt; 50000 ) %&gt;%
+  count()</code></pre>
+<pre><code>## # A tibble: 1 × 1
+##       n
+##   &lt;int&gt;
+## 1    50</code></pre>
 </div>
 <div id="exercise-g." class="section level3">
 <h3>Exercise g.</h3>
 <p><em>How many regions have more than 50 tourist attraction in the data
 set? (Hint: You will need to tabulate the data before
 filtering.)</em></p>
-<pre class="r"><code>#visitors %&gt;% 
-#  _____(region) %&gt;%
-#  filter(______)</code></pre>
+<pre class="r"><code>visitors %&gt;% 
+  count(region) %&gt;%
+  filter(n&gt;50)</code></pre>
+<pre><code>## # A tibble: 1 × 2
+##   region       n
+##   &lt;chr&gt;    &lt;int&gt;
+## 1 Scotland    97</code></pre>
 </div>
 </div>
 </div>
@@ -550,18 +562,23 @@ attractions?</em></p>
 <h3>Exercise h.</h3>
 <p><em>Perform the same calculation for the 2021 admissions
 data.</em></p>
-<pre class="r"><code>#visitors %&gt;% 
-#  ______(
-#    __________,
-#    __________
-#  )</code></pre>
+<pre class="r"><code>visitors %&gt;% 
+  summarise(
+    mean_2021 = mean(n_2021),
+    med_2021 = median(n_2021)
+  )</code></pre>
+<pre><code>## # A tibble: 1 × 2
+##   mean_2021 med_2021
+##       &lt;dbl&gt;    &lt;dbl&gt;
+## 1        NA       NA</code></pre>
 <p>All values in the output are <code>NA</code>!</p>
 </div>
 <div id="exercise-i." class="section level3">
 <h3>Exercise i.</h3>
 <p><em>What does <code>NA</code> stand for and why are you getting this
 as your answer to the previous question.</em></p>
-<p><strong>Write your answer here</strong></p>
+<p>there exists null values within the table and a mean cannot be
+calculated from null values, thus creating a null answer</p>
 </div>
 <div id="exercise-j." class="section level3">
 <h3>Exercise j.</h3>
@@ -569,7 +586,8 @@ as your answer to the previous question.</em></p>
 <code>median()</code> commands to see what the input argument
 <code>na.rm</code> does. Edit your code from exercise h so that it
 computes the summary statistics where data is available.</em></p>
-<p><strong>Write your answer here</strong></p>
+<p>visitors %&gt;% summarise(mean_2021 = mean(n_2021, na.rm =
+TRUE),med_2021 = median(n_2021, na.rm= TRUE))</p>
 </div>
 </div>
 <div id="question-7" class="section level2">
@@ -593,18 +611,23 @@ visitor numbers in 2022?</em></p>
 <p><em>Observe in question 6 that the mean statistics across all
 settings are much larger than the corresponding median statistics.
 Discuss in your group what this suggests about the data.</em></p>
-<p><strong>Write your answer here</strong></p>
+<p>median is much lower than the mean - there are more lower values but
+the larger values are much larger</p>
 </div>
 </div>
 <div id="question-8" class="section level2">
 <h2>Question 8</h2>
 <div id="exercise-l." class="section level3">
 <h3>Exercise l.</h3>
-<pre class="r"><code>#visitors %&gt;% 
-#  summarise(
-#     __________,
-#     __________,
-#  )</code></pre>
+<pre class="r"><code>visitors %&gt;% 
+  summarise(
+     max_2021 = max(n_2021, na.rm = TRUE),
+     min_2021 = min(n_2021, na.rm = TRUE),
+  )</code></pre>
+<pre><code>## # A tibble: 1 × 2
+##   max_2021 min_2021
+##      &lt;dbl&gt;    &lt;dbl&gt;
+## 1  5400000     1052</code></pre>
 </div>
 </div>
 <div id="question-9" class="section level2">
@@ -639,8 +662,28 @@ visitors_with_nations %&gt;%
 <p><em>How many tourist attractions are there in each of the 4 nations?
 From this, discuss in your group how reliable you think the
 inter-quartile estimates are.</em></p>
-<pre class="r"><code>#________ %&gt;%
-#  ______(_______)</code></pre>
+<pre class="r"><code>    visitors_with_nations &lt;- visitors %&gt;%
+      mutate(
+        nation = case_when(
+          region == &quot;Northern Ireland&quot; ~ &quot;Northern Ireland&quot;,
+          region == &quot;Scotland&quot; ~ &quot;Scotland&quot;,
+          region == &quot;Wales&quot; ~ &quot;Wales&quot;,
+          TRUE ~ &quot;England&quot;
+        )
+      )
+
+    visitors_with_nations %&gt;% 
+      group_by(nation) %&gt;%
+      summarise(
+        attractionNum = n()
+      )</code></pre>
+<pre><code>## # A tibble: 4 × 2
+##   nation           attractionNum
+##   &lt;chr&gt;                    &lt;int&gt;
+## 1 England                    240
+## 2 Northern Ireland             9
+## 3 Scotland                    97
+## 4 Wales                        2</code></pre>
 </div>
 </div>
 </div>
