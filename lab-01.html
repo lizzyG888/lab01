@@ -693,7 +693,30 @@ inter-quartile estimates are.</em></p>
 <h3>Exercise n.</h3>
 <p><em>Within each of the 4 nations, what is the proportion of tourist
 attractions that have free admission for all visitors?</em></p>
-<pre class="r"><code># Write your code here</code></pre>
+<pre class="r"><code># Write your code here
+    visitors_with_nations &lt;- visitors %&gt;%
+      mutate(
+        nation = case_when(
+          region == &quot;Northern Ireland&quot; ~ &quot;Northern Ireland&quot;,
+          region == &quot;Scotland&quot; ~ &quot;Scotland&quot;,
+          region == &quot;Wales&quot; ~ &quot;Wales&quot;,
+          TRUE ~ &quot;England&quot;
+        )
+      )
+
+    visitors_with_nations %&gt;%
+      group_by(nation) %&gt;%
+      summarise(
+        nocharge = sum(admission == &quot;Free&quot;, na.rm = TRUE),
+    charged  = sum(admission != &quot;Free&quot;, na.rm = TRUE)
+      )</code></pre>
+<pre><code>## # A tibble: 4 × 3
+##   nation           nocharge charged
+##   &lt;chr&gt;               &lt;int&gt;   &lt;int&gt;
+## 1 England                93     147
+## 2 Northern Ireland        1       8
+## 3 Scotland               34      63
+## 4 Wales                   0       2</code></pre>
 </div>
 <div id="exercise-o." class="section level3">
 <h3>Exercise o.</h3>
